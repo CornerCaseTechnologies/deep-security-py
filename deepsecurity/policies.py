@@ -19,7 +19,7 @@ class Policies(core.CoreDict):
     """
     call = self.manager._get_request_format(call='securityProfileRetrieveAll')
     response = self.manager._request(call)
-    
+
     if response and response['status'] == 200:
       if not type(response['data']) == type([]): response['data'] = [response['data']]
       for policy in response['data']:
@@ -28,7 +28,7 @@ class Policies(core.CoreDict):
           try:
             self[policy_obj.id] = policy_obj
             self.log("Added Policy {}".format(policy_obj.id), level='debug')
-          except Exception, err:
+          except Exception as err:
             self.log("Could not add Policy {}".format(policy_obj), level='warning', err=err)
 
     return len(self)
@@ -52,33 +52,33 @@ class Policies(core.CoreDict):
 
     enable_anti_malware
       - if True, enable the anti-malware module
-      - if 'parent_profile_id' is set, the new policy will 
+      - if 'parent_profile_id' is set, the new policy will
         inherit this value from the parent
 
     enable_firewall
       - if True, enable the firewall module
-      - if 'parent_profile_id' is set, the new policy will 
+      - if 'parent_profile_id' is set, the new policy will
         inherit this value from the parent
 
     enable_intrusion_prevention
       - if True, enable the intrusion prevention module
-      - if 'parent_profile_id' is set, the new policy will 
+      - if 'parent_profile_id' is set, the new policy will
         inherit this value from the parent
 
     enable_integrity_monitoring
       - if True, enable the integrity monitoring module
-      - if 'parent_profile_id' is set, the new policy will 
-        inherit this value from the parent   
+      - if 'parent_profile_id' is set, the new policy will
+        inherit this value from the parent
 
     enable_log_inspection
       - if True, enable the log inspection module
-      - if 'parent_profile_id' is set, the new policy will 
-        inherit this value from the parent  
+      - if 'parent_profile_id' is set, the new policy will
+        inherit this value from the parent
 
     description
       - the description of the new policy
 
-    Returns the ID of the new policy is successful. False if not successful in 
+    Returns the ID of the new policy is successful. False if not successful in
     creating the new policy
     """
     result = None
@@ -126,7 +126,7 @@ class Policies(core.CoreDict):
              'statefulConfigurationID': None
              }
       }
-    
+
     response = self.manager._request(call)
     if response and response['status'] == 200:
       try:
@@ -135,7 +135,7 @@ class Policies(core.CoreDict):
           self[new_policy.id] = new_policy
           result = new_policy.id
           self.log("Added new policy #{}".format(new_policy.id))
-      except Exception, err:
+      except Exception as err:
         self.log("Could not create new policy from API response", err=err)
     else:
       result = False
@@ -179,7 +179,7 @@ class Rules(core.CoreDict):
               if rule_key == 'intrusion_prevention' and rule_obj.cve_numbers:
                 rule_obj.cve_numbers = rule_obj.cve_numbers.split(', ')
                 if type(rule_obj.cve_numbers) in [type(''), type(u'')]: rule_obj.cve_numbers = [ rule_obj.cve_numbers ]
-                
+
               rule_id = '{}-{: >10}'.format(rule_key, i)
               if 'id' in dir(rule_obj): rule_id = rule_obj.id
               elif 'tbuid' in dir(rule_obj): rule_id = rule_obj.tbuid
@@ -204,7 +204,7 @@ class IPLists(core.CoreDict):
       for ip_list in response['data']:
         ip_list_obj = IPList(self.manager, ip_list, self.log)
         self[ip_list_obj.id] = ip_list_obj
-    
+
     return len(self)
 
 class Policy(core.CoreObject):
@@ -272,17 +272,17 @@ class Policy(core.CoreObject):
       - the ID of the ruleset to use for this application control policy
 
     state:
-      - if set to None, no changes are made 
+      - if set to None, no changes are made
       - if set to "on", application control is turned on for this policy
       - if set to "off", application control is turned off for this policy
-      - if set to "inherit", the application control state inherited from this policy's parent (if one exists)  
+      - if set to "inherit", the application control state inherited from this policy's parent (if one exists)
 
     whitelist_mode:
       - if set to None, no changes are made
       - if set to "local-inventory", application control is turned on for this policy
       - if set to "shared", application control is turned off for this policy
-      - if set to "inherit", the application control state inherited from this policy's parent (if one exists)  
-    """    
+      - if set to "inherit", the application control state inherited from this policy's parent (if one exists)
+    """
     return self.manager.application_control.set_policy_settings(self.id, lockdown=lockdown, ruleset_id=ruleset_id, state=state, whitelist_mode=whitelist_mode)
 
 class Rule(core.CoreObject):
@@ -290,7 +290,7 @@ class Rule(core.CoreObject):
     self.manager = manager
     self.rule_type = rule_type
     self.policies = core.CoreDict()
-    if api_response: self._set_properties(api_response, log_func)  
+    if api_response: self._set_properties(api_response, log_func)
 
 class IPList(core.CoreObject):
   def __init__(self, manager=None, api_response=None, log_func=None):

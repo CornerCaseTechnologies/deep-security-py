@@ -29,7 +29,7 @@ class CoreApi(object):
   # *******************************************************************
   @property
   def log_at_level(self): return self._log_at_level
-  
+
   @log_at_level.setter
   def log_at_level(self, value):
     """
@@ -88,7 +88,7 @@ class CoreApi(object):
 
   def _request(self, request, auth_required=True):
     """
-    Make an HTTP(S) request to an API endpoint based on what's specified in the 
+    Make an HTTP(S) request to an API endpoint based on what's specified in the
     request object passed
 
     ## Input
@@ -98,7 +98,7 @@ class CoreApi(object):
         Either REST or SOAP
 
       call
-        Name of the SOAP method or relative path of the REST URL 
+        Name of the SOAP method or relative path of the REST URL
 
     Optional keys:
       query
@@ -106,7 +106,7 @@ class CoreApi(object):
 
       data
         Data to post. For SOAP API calls this will be the SOAP envelope. For
-        REST API calls this will be a dict converted to JSON automatically 
+        REST API calls this will be a dict converted to JSON automatically
         by this method
 
       use_cookie_auth
@@ -176,7 +176,7 @@ class CoreApi(object):
 
     # Prep the URL opener
     url_opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ssl_context))
-  
+
     # Prep the request
     request_type = 'GET'
     headers = {
@@ -186,7 +186,7 @@ class CoreApi(object):
 
     # authentication calls don't accept the Accept header
     if request['call'].startswith('authentication'): del(headers['Accept'])
-    
+
     # some rest calls use a cookie to pass the sID
     if request['api'] == self.API_TYPE_REST and request['use_cookie_auth']:
       headers['Cookie'] = 'sID="{}"'.format(self._sessions[self.API_TYPE_REST])
@@ -231,7 +231,7 @@ class CoreApi(object):
     response = None
     try:
       response = url_opener.open(url_request)
-    except Exception, url_err:
+    except Exception as url_err:
       self.log("Failed to make {} {} call [{}]".format(request['api'].upper(), request_type, request['call'].lstrip('/')), err=url_err)
 
     # Convert the request from JSON
@@ -259,7 +259,7 @@ class CoreApi(object):
                   result['data'] = result['data']['{}Response'.format(request['call'])]
             else:
               result['data'] = full_data
-        except Exception, xmltodict_err:
+        except Exception as xmltodict_err:
           self.log("Could not convert response from call {}".format(request['call']), err=xmltodict_err)
       else:
         # JSON response
@@ -267,11 +267,11 @@ class CoreApi(object):
           if result['raw'] and result['status'] != 204:
             result['type'] = result['headers']['content-type']
             result['data'] = json.loads(result['raw']) if 'json' in result['type'] else None
-        except Exception, json_err:
-          # report the exception as 'info' because it's not fatal and the data is 
+        except Exception as json_err:
+          # report the exception as 'info' because it's not fatal and the data is
           # still captured in result['raw']
           self.log("Could not convert response from call {} to JSON. Threw exception:\n\t{}".format(request['call'], json_err), level='info')
-          
+
     return result
 
   def _prefix_keys(self, prefix, d):
@@ -285,10 +285,10 @@ class CoreApi(object):
       new_key = u"{}:{}".format(prefix, k)
       new_v = v
       if type(v) == type({}): new_v = self._prefix_keys(prefix, v)
-      new_d[new_key] = new_v 
+      new_d[new_key] = new_v
       del(new_d[k])
 
-    return new_d    
+    return new_d
 
   def _prep_data_for_soap(self, call, details):
     """
@@ -330,7 +330,7 @@ class CoreApi(object):
     try:
       func = getattr(self.logger, level.lower())
       func(message)
-    except Exception, log_err:
+    except Exception as log_err:
       self.logger.critical("Could not write to log. Threw exception:\n\t{}".format(log_err))
 
 class CoreDict(dict):
@@ -350,7 +350,7 @@ class CoreDict(dict):
         possibilities:
            { 'id': 1, 'name': 'One'}
            { 'id': 1, 'name': 'Two'}
-        
+
     .find(id=[1,2])
     >>> returns any item with a property 'id' and value in [1,2]
         possibilities:
@@ -363,7 +363,7 @@ class CoreDict(dict):
     >>> returns any item with a property 'id' and value in [1] AND a property 'name' and value in ['One']
         possibilities:
            { 'id': 1, 'name': 'One'}
-        
+
     .find(id=[1,2], name='One')
     >>> returns any item with a property 'id' and value in [1,2] AND a property 'name' and value in ['One']
         possibilities:
@@ -445,7 +445,7 @@ class CoreObject(object):
 
       try:
         setattr(self, new_key, val)
-      except Exception, err:
+      except Exception as err:
         if log_func:
           log_func("Could not set property {} to value {} for object {}".format(k, v, s))
           try:
@@ -484,7 +484,7 @@ class CoreList(list):
         possibilities:
            { 'id': 1, 'name': 'One'}
            { 'id': 1, 'name': 'Two'}
-        
+
     .find(id=[1,2])
     >>> returns any item with a property 'id' and value in [1,2]
         possibilities:
@@ -497,7 +497,7 @@ class CoreList(list):
     >>> returns any item with a property 'id' and value in [1] AND a property 'name' and value in ['One']
         possibilities:
            { 'id': 1, 'name': 'One'}
-        
+
     .find(id=[1,2], name='One')
     >>> returns any item with a property 'id' and value in [1,2] AND a property 'name' and value in ['One']
         possibilities:

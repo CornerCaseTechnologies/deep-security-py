@@ -55,7 +55,7 @@ class Manager(core.CoreApi):
     """
     try:
       self.sign_out()
-    except Exception, err: pass
+    except Exception as err: pass
 
   def __str__(self):
     """
@@ -69,14 +69,14 @@ class Manager(core.CoreApi):
   # *******************************************************************
   @property
   def hostname(self): return self._hostname
-  
+
   @hostname.setter
   def hostname(self, value):
     if value == 'app.deepsecurity.trendmicro.com': # Deep Security as a Service
       self.port = 443
     self._hostname = value
     self._set_endpoints()
-  
+
   @property
   def port(self): return self._port
 
@@ -95,7 +95,7 @@ class Manager(core.CoreApi):
 
   @property
   def username(self): return self._username
-  
+
   @username.setter
   def username(self, value):
     self._username = value
@@ -141,7 +141,7 @@ class Manager(core.CoreApi):
 
     Path checked is ( via os.path.expanduser(path) ):
       ~/.deepsecurity/credentials
-      C:\Users\USERNAME\.deepsecurity\credentials
+      C:\\Users\\USERNAME\\.deepsecurity\\credentials
 
     !!! Remember that by storing credentials on the local disk you are increasing the
         risk of compromise as you've expanded the attack surface. If an attacker gains
@@ -167,7 +167,7 @@ class Manager(core.CoreApi):
             if m:
               if not credentials.has_key(m.group('key')): credentials[m.group('key')] = None
               credentials[m.group('key')] = m.group('val')
-      except Exception, err:
+      except Exception as err:
         self.log("Could not read and process local credentials file.", err=err)
 
       # verify credentials
@@ -177,9 +177,9 @@ class Manager(core.CoreApi):
             try:
               setattr(self, "_{}".format(k), v)
               self.log("Loaded {} from local credentials file".format(k))
-            except Exception, err:
+            except Exception as err:
               self.log("Unable to load {} from local credentials file".format(k))
-  
+
   def sign_in(self):
     """
     Sign in to the Deep Security APIs
@@ -265,7 +265,7 @@ class Manager(core.CoreApi):
       versions[self.API_TYPE_REST] = response['data']
 
     return versions
-  
+
   def get_time(self):
     """
     Get the current time as set on the Manager
@@ -275,9 +275,9 @@ class Manager(core.CoreApi):
     response = self._request(soap_call, auth_required=False)
     if response and response['status'] == 200 and response['data'].has_key('#text'):
       result = datetime.datetime.strptime(response['data']['#text'], "%Y-%m-%dT%H:%M:%S.%fZ")
-  
+
     return result
-  
+
   def is_up(self):
     """
     Check to see if the Manager is up and responding to requests
@@ -293,7 +293,7 @@ class Manager(core.CoreApi):
     return result
 
   # *******************************************************************
-  # mirrored on the computers.Computer and computers.ComputerGroup 
+  # mirrored on the computers.Computer and computers.ComputerGroup
   # objects
   # *******************************************************************
   def request_events_from_computer(self, computer_id):
@@ -308,7 +308,7 @@ class Manager(core.CoreApi):
       }
     response = self._request(soap_call)
     if response and response['status'] == 200: result = True
-    
+
     return result
 
   def clear_alerts_and_warnings_from_computers(self, computer_ids):
@@ -325,7 +325,7 @@ class Manager(core.CoreApi):
       }
     response = self._request(soap_call)
     if response and response['status'] == 200: result = True
-    
+
     return result
 
   def scan_computers_for_malware(self, computer_ids):
@@ -342,7 +342,7 @@ class Manager(core.CoreApi):
       }
     response = self._request(soap_call)
     if response and response['status'] == 200: result = True
-    
+
     return result
 
   def scan_computers_for_integrity(self, computer_ids):
@@ -359,7 +359,7 @@ class Manager(core.CoreApi):
       }
     response = self._request(soap_call)
     if response and response['status'] == 200: result = True
-    
+
     return result
 
   def scan_computers_for_recommendations(self, computer_ids):
@@ -376,11 +376,11 @@ class Manager(core.CoreApi):
       }
     response = self._request(soap_call)
     if response and response['status'] == 200: result = True
-    
-    return result 
+
+    return result
 
   def assign_policy_to_computers(self, policy_id, computer_ids):
-    """   
+    """
     Assign the specified policy to the specified computers
     """
     result = False
@@ -394,7 +394,7 @@ class Manager(core.CoreApi):
       }
     response = self._request(soap_call)
     if response and response['status'] == 200: result = True
-    
+
     return result
 
   def get_rule_recommendations_for_computer(self, computer_id):

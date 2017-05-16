@@ -115,7 +115,7 @@ class Computers(core.CoreDict):
           }
 
     response = self.manager._request(call)
-    
+
     if response and response['status'] == 200:
       if not type(response['data']) == type([]): response['data'] = [response['data']]
       for computer in response['data']:
@@ -123,23 +123,23 @@ class Computers(core.CoreDict):
         if computer_obj:
           self[computer_obj.id] = computer_obj
           self.log("Added Computer {}".format(computer_obj.id), level='debug')
-          
+
           try:
             # add this computer to any appropriate groups on the Manager()
             if 'computer_group_id' in dir(computer_obj) and computer_obj.computer_group_id:
               if self.manager.computer_groups and self.manager.computer_groups.has_key(computer_obj.computer_group_id):
                 self.manager.computer_groups[computer_obj.computer_group_id].computers[computer_obj.id] = computer_obj
                 self.log("Added Computer {} to ComputerGroup {}".format(computer_obj.id, computer_obj.computer_group_id), level='debug')
-          except Exception, hostGroupid_err:
+          except Exception as hostGroupid_err:
             self.log("Could not add Computer {} to ComputerGroup".format(computer_obj.id), err=hostGroupid_err)
 
-          try: 
+          try:
             # add this computer to any appropriate policies on the Manager()
             if 'policy_id' in dir(computer_obj) and computer_obj.policy_id:
               if self.manager.policies and self.manager.policies.has_key(computer_obj.policy_id):
                 self.manager.policies[computer_obj.policy_id].computers[computer_obj.id] = computer_obj
                 self.log("Added Computer {} to Policy {}".format(computer_obj.id, computer_obj.policy_id), level='debug')
-          except Exception, securityProfileid_err:
+          except Exception as securityProfileid_err:
             self.log("Could not add Computer {} to Policy".format(computer_obj.id), err=securityProfileid_err)
 
     return len(self)
@@ -156,7 +156,7 @@ class ComputerGroups(core.CoreDict):
     """
     Get all or a filtered set of computer groups from Deep Security
 
-    If a name or group_id is specified, will only retrieve the 
+    If a name or group_id is specified, will only retrieve the
     computer groups matching the name or group_id.
 
     If both are specified, name takes priority
@@ -223,7 +223,7 @@ class Computer(core.CoreObject):
     """
     Request a recommendation scan be run on the computer
     """
-    return self.manager.scan_computers_for_recommendations(self.id)       
+    return self.manager.scan_computers_for_recommendations(self.id)
 
   def assign_policy(self, policy_id):
     """
@@ -271,7 +271,7 @@ class ComputerGroup(core.CoreObject):
     """
     Request an integrity scan be run on all computers in this group
     """
-    return self.manager.scan_computers_for_integrity(self.computers.keys())        
+    return self.manager.scan_computers_for_integrity(self.computers.keys())
 
   def scan_for_recommendations(self):
     """
