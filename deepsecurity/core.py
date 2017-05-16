@@ -5,7 +5,7 @@ import logging
 import re
 import ssl
 import urllib
-import urllib2
+import urllib.request
 
 # 3rd party libraries
 import libs.xmltodict as xmltodict
@@ -175,7 +175,7 @@ class CoreApi(object):
       self.log("SSL certificate validation has been disabled for this call", level='warning')
 
     # Prep the URL opener
-    url_opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ssl_context))
+    url_opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl_context))
 
     # Prep the request
     request_type = 'GET'
@@ -207,24 +207,24 @@ class CoreApi(object):
         'content-type': 'application/soap+xml'
         }
       data = self._prep_data_for_soap(request['call'], request['data'])
-      url_request = urllib2.Request(url, data=data, headers=headers)
+      url_request = urllib.request.Request(url, data=data, headers=headers)
       request_type = 'POST'
       self.log("Making a SOAP request with headers {}".format(headers), level='debug')
       self.log("   and data {}".format(data), level='debug')
     elif request['call'] == 'authentication/logout':
-      url_request = urllib2.Request(url, headers=headers)
+      url_request = urllib.request.Request(url, headers=headers)
       setattr(url_request, 'get_method', lambda: 'DELETE') # make this request use the DELETE HTTP verb
       request_type = 'DELETE'
       self.log("Making a REST DELETE request with headers {}".format(headers), level='debug')
     elif request.has_key('data') and request['data']:
       # POST
-      url_request = urllib2.Request(url, data=json.dumps(request['data']), headers=headers)
+      url_request = urllib.request.Request(url, data=json.dumps(request['data']), headers=headers)
       request_type = 'POST'
       self.log("Making a REST POST request with headers {}".format(headers), level='debug')
       self.log("    and data {}".format(request['data']), level='debug')
     else:
       # GET
-      url_request = urllib2.Request(url, headers=headers)
+      url_request = urllib.request.Request(url, headers=headers)
       self.log("Making a REST GET request with headers {}".format(headers), level='debug')
 
     # Make the request
